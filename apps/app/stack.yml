@@ -2,7 +2,7 @@ version: "3.8"
 
 services:
   app:
-    image: ghcr.io/tadeubdev/infra-swarm-app:1.2
+    image: ghcr.io/tadeubdev/infra-swarm-app:latest
     networks:
       - public
     deploy:
