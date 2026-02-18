@@ -15,8 +15,8 @@ docker build -t infra-api:1.1 .
 # deploy no servidor
 docker stack deploy -c stack.yml apps
 
-docker service update --force apps_app
-docker service update --force apps_api
+
+# qatualizar a imagem no servidor
+docker service update --force --with-registry-auth --image ghcr.io/tadeubdev/infra-swarm-app:latest apps_app
+docker service update --force --with-registry-auth --image ghcr.io/tadeubdev/infra-swarm-api:latest apps_api
 ```
-
-
