@@ -27,11 +27,7 @@ services:
         - traefik.http.routers.traefik.rule=Host(`traefik.tadeubarbosa.work`) && (PathPrefix(`/api`) || PathPrefix(`/dashboard`))
         - traefik.http.routers.traefik.entrypoints=web
         - traefik.http.routers.traefik.service=api@internal
-
-        # Basic Auth
-        - traefik.http.routers.traefik.middlewares=traefik-auth@swarm
-        - traefik.http.middlewares.traefik-auth.basicauth.users=admin:$$2y$$05$$...COLE_AQUI...
-        - traefik.http.middlewares.traefik-auth.basicauth.removeheader=true
+        - traefik.http.services.traefik.loadbalancer.server.port=8080
 
 networks:
   public:
