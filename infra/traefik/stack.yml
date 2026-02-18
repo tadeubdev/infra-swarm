@@ -5,13 +5,15 @@ services:
     image: traefik:v3.1
     command:
       - --configFile=/etc/traefik/traefik.yml
+    environment:
+      - DOCKER_API_VERSION=1.44
     ports:
       - "80:80"
     networks:
       - public
     volumes:
       - /var/run/docker.sock:/var/run/docker.sock:ro
-      - ./infra/traefik/traefik.yml:/etc/traefik/traefik.yml:ro
+      - ./traefik.yml:/etc/traefik/traefik.yml:ro
     deploy:
       placement:
         constraints:

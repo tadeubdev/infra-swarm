@@ -9,8 +9,7 @@ entryPoints:
     address: ":80"
 
 providers:
-  docker:
-    swarmMode: true
+  swarm:
     endpoint: "unix:///var/run/docker.sock"
     exposedByDefault: false
 
