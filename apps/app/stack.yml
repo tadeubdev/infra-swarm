@@ -2,7 +2,7 @@ version: "3.8"
 
 services:
   app:
-    image: infra-app:latest
+    image: infra-app:1.1
     networks:
       - public
     deploy:
