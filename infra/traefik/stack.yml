@@ -29,7 +29,7 @@ services:
         - traefik.http.routers.traefik.service=api@internal
 
         # Basic Auth
-        - traefik.http.routers.traefik.middlewares=traefik-auth@docker
+        - traefik.http.routers.traefik.middlewares=traefik-auth@swarm
         - traefik.http.middlewares.traefik-auth.basicauth.users=admin:$$2y$$05$$...COLE_AQUI...
         - traefik.http.middlewares.traefik-auth.basicauth.removeheader=true
 
