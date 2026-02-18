@@ -1,6 +1,5 @@
 api:
   dashboard: true
-  insecure: true
 
 log:
   level: INFO
@@ -8,13 +7,9 @@ log:
 entryPoints:
   web:
     address: ":80"
-  traefik:
-    address: ":8080"
 
 providers:
   docker:
     endpoint: "unix:///var/run/docker.sock"
     swarmMode: true
     exposedByDefault: false
-
-ping: {}
