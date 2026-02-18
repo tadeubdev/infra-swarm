@@ -7,6 +7,9 @@ services:
       - public
     deploy:
       replicas: 2
+      placement:
+        constraints:
+          - node.role == manager
       labels:
         - traefik.enable=true
         - traefik.docker.network=public
