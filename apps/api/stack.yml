@@ -2,7 +2,7 @@ version: "3.8"
 
 services:
   api:
-    image: infra-api:1.1
+    image: ghcr.io/tadeubdev/infra-swarm-api:1.2
     networks:
       - public
     deploy:
