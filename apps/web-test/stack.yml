@@ -9,6 +9,7 @@ services:
       replicas: 4
       labels:
         - traefik.enable=true
+        - traefik.docker.network=public
         # Acessa: http://IP_PUBLICO/web-test
         - traefik.http.routers.webtest.rule=PathPrefix(`/web-test`)
         - traefik.http.routers.webtest.entrypoints=web
