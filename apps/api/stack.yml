@@ -1,0 +1,22 @@
+version: "3.8"
+
+services:
+  api:
+    build: .
+    networks:
+      - public
+    deploy:
+      replicas: 2
+      labels:
+        - traefik.enable=true
+        - traefik.docker.network=public
+
+        - traefik.http.routers.api.rule=Host(`api.tadeubarbosa.work`)
+        - traefik.http.routers.api.entrypoints=web
+        - traefik.http.routers.api.service=api
+
+        - traefik.http.services.api.loadbalancer.server.port=3000
+
+networks:
+  public:
+    external: true
