@@ -1,6 +1,6 @@
 <template>
   <div id="app">
-    <h1>Vue 3 + Vite + TypeScript</h1>
+    <h1>Testando deploy</h1>
   </div>
 </template>
 
