@@ -16,8 +16,8 @@ services:
         - traefik.docker.network=public
 
         - traefik.http.routers.auth.rule=Host(`auth.tadeubarbosa.work`)
+        - traefik.http.routers.auth.entrypoints=web
         - traefik.http.services.auth.loadbalancer.server.port=3001
-
 networks:
   public:
     external: true
