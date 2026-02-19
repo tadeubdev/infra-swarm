@@ -1,0 +1,89 @@
+name: Build, Push (GHCR) and Deploy Auth (Swarm)
+
+on:
+  push:
+    branches: [ "main" ]
+    paths:
+      - "apps/auth/**"
+      - ".github/workflows/build-deploy-auth.yml"
+  workflow_dispatch:
+
+permissions:
+  contents: read
+  packages: write
+
+concurrency:
+  group: auth-${{ github.ref }}
+  cancel-in-progress: true
+
+env:
+  REGISTRY: ghcr.io
+  IMAGE_AUTH: ghcr.io/tadeubdev/infra-swarm-auth
+
+jobs:
+  build-push-auth:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: docker/setup-buildx-action@v3
+
+      - name: Login to GHCR
+        uses: docker/login-action@v3
+        with:
+          registry: ${{ env.REGISTRY }}
+          username: ${{ github.actor }}
+          password: ${{ secrets.GITHUB_TOKEN }}
+
+      - name: Build & Push AUTH
+        uses: docker/build-push-action@v6
+        with:
+          context: ./apps/auth
+          push: true
+          tags: |
+            ${{ env.IMAGE_AUTH }}:latest
+            ${{ env.IMAGE_AUTH }}:${{ github.sha }}
+
+  deploy-auth:
+    needs: build-push-auth
+    runs-on: ubuntu-latest
+    steps:
+      - name: Deploy on Swarm manager via SSH
+        uses: appleboy/ssh-action@v1.0.3
+        with:
+          host: ${{ secrets.SERVER_HOST }}
+          username: ${{ secrets.SERVER_USER }}
+          key: ${{ secrets.SERVER_SSH_KEY }}
+          port: ${{ secrets.SERVER_SSH_PORT }}
+          script: |
+            set -e
+
+            echo "Deploying SHA: ${{ github.sha }}"
+
+            docker service update --with-registry-auth \
+              --image ${{ env.IMAGE_AUTH }}:${{ github.sha }} \
+              apps_auth
+
+            docker service ls | grep -E 'apps_auth' || true
+
+      - name: Telegram Notification
+        if: always()
+        env:
+          RUN_URL: ${{ github.server_url }}/${{ github.repository }}/actions/runs/${{ github.run_id }}
+          SHA_SHORT: ${{ github.sha }}
+        run: |
+          STATUS_EMOJI="✅"
+          STATUS_TEXT="Deploy concluído"
+          [ "${{ job.status }}" = "success" ] || { STATUS_EMOJI="❌"; STATUS_TEXT="Deploy falhou"; }
+
+          MSG="${STATUS_EMOJI} ${STATUS_TEXT}
+          Projeto: ${{ github.repository }}
+          Branch: ${{ github.ref_name }}
+          Autor: ${{ github.actor }}
+          SHA: ${SHA_SHORT}
+          Run: ${RUN_URL}"
+
+          curl --fail --show-error --silent --retry 3 --max-time 15 \
+            -X POST "https://api.telegram.org/bot${{ secrets.TELEGRAM_TOKEN }}/sendMessage" \
+            --data-urlencode "chat_id=${{ secrets.TELEGRAM_CHAT_ID }}" \
+            --data-urlencode "text=${MSG}" || true

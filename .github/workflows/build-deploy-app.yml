@@ -1,25 +1,27 @@
-name: Build, Push (GHCR) and Deploy (Swarm)
+name: Build, Push (GHCR) and Deploy App (Swarm)
 
 on:
   push:
     branches: [ "main" ]
     paths:
       - "apps/app/**"
-      - "apps/api/**"
-      - ".github/workflows/build-deploy.yml"
+      - ".github/workflows/build-deploy-app.yml"
   workflow_dispatch:
 
 permissions:
   contents: read
   packages: write
 
+concurrency:
+  group: app-${{ github.ref }}
+  cancel-in-progress: true
+
 env:
   REGISTRY: ghcr.io
   IMAGE_APP: ghcr.io/tadeubdev/infra-swarm-app
-  IMAGE_API: ghcr.io/tadeubdev/infra-swarm-api
 
 jobs:
-  build-push:
+  build-push-app:
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v4
@@ -42,17 +44,8 @@ jobs:
             ${{ env.IMAGE_APP }}:latest
             ${{ env.IMAGE_APP }}:${{ github.sha }}
 
-      - name: Build & Push API
-        uses: docker/build-push-action@v6
-        with:
-          context: ./apps/api
-          push: true
-          tags: |
-            ${{ env.IMAGE_API }}:latest
-            ${{ env.IMAGE_API }}:${{ github.sha }}
-
-  deploy:
-    needs: build-push
+  deploy-app:
+    needs: build-push-app
     runs-on: ubuntu-latest
     steps:
       - name: Deploy on Swarm manager via SSH
@@ -71,11 +64,7 @@ jobs:
               --image ${{ env.IMAGE_APP }}:${{ github.sha }} \
               apps_app
 
-            docker service update --with-registry-auth \
-              --image ${{ env.IMAGE_API }}:${{ github.sha }} \
-              apps_api
-
-            docker service ls | grep -E 'apps_app|apps_api' || true
+            docker service ls | grep -E 'apps_app' || true
 
       - name: Telegram Notification
         if: always()
