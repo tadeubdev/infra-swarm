@@ -10,6 +10,13 @@ services:
       placement:
         constraints:
           - node.role == manager
+      update_config:
+        parallelism: 1
+        order: start-first
+        delay: 5s
+      rollback_config:
+        parallelism: 1
+        order: stop-first
       labels:
         - traefik.enable=true
         - traefik.docker.network=public
