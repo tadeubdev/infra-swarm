@@ -43,9 +43,7 @@ app.get("/json", (req, res) => {
     });
 });
 
-app.get("/text", (req, res) => {
-    res.send("this is a text endpoint");
-});
+app.get("/text", (req, res) => res.send("this is a text endpoint"));
 
 app.get("/health", (req, res) => res.status(200).send("ok"));
 
