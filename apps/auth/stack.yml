@@ -15,7 +15,6 @@ services:
         - traefik.enable=true
 
         - traefik.http.routers.auth.rule=Host(`auth.tadeubarbosa.work`)
-        - traefik.http.routers.auth.entrypoints=websecure
         - traefik.http.routers.auth.tls=true
         - traefik.http.services.auth.loadbalancer.server.port=3001
 
