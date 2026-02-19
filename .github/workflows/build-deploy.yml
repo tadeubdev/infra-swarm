@@ -77,16 +77,24 @@ jobs:
 
             docker service ls | grep -E 'apps_app|apps_api' || true
 
-      - name: Telegram Success
-        if: success()
+      - name: Telegram Notification
+        if: always()
+        env:
+          RUN_URL: ${{ github.server_url }}/${{ github.repository }}/actions/runs/${{ github.run_id }}
+          SHA_SHORT: ${{ github.sha }}
         run: |
-          curl -s -X POST "https://api.telegram.org/bot${{ secrets.TELEGRAM_TOKEN }}/sendMessage" \
-            -d "chat_id=${{ secrets.TELEGRAM_CHAT_ID }}" \
-            -d "text=✅ Deploy concluído App e API atualizados para SHA: ${{ github.sha }}"
+          STATUS_EMOJI="✅"
+          STATUS_TEXT="Deploy concluído"
+          [ "${{ job.status }}" = "success" ] || { STATUS_EMOJI="❌"; STATUS_TEXT="Deploy falhou"; }
 
-      - name: Telegram Failure
-        if: failure()
-        run: |
-          curl -s -X POST "https://api.telegram.org/bot${{ secrets.TELEGRAM_TOKEN }}/sendMessage" \
-            -d "chat_id=${{ secrets.TELEGRAM_CHAT_ID }}" \
-            -d "text=❌ Deploy falhou Verifique o workflow: ${{ github.server_url }}/${{ github.repository }}/actions/runs/${{ github.run_id }}"
+          MSG="${STATUS_EMOJI} ${STATUS_TEXT}
+          Projeto: ${{ github.repository }}
+          Branch: ${{ github.ref_name }}
+          Autor: ${{ github.actor }}
+          SHA: ${SHA_SHORT}
+          Run: ${RUN_URL}"
+
+          curl --fail --show-error --silent --retry 3 --max-time 15 \
+            -X POST "https://api.telegram.org/bot${{ secrets.TELEGRAM_TOKEN }}/sendMessage" \
+            --data-urlencode "chat_id=${{ secrets.TELEGRAM_CHAT_ID }}" \
+            --data-urlencode "text=${MSG}" || true
