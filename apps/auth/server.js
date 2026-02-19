@@ -47,4 +47,4 @@ app.get("/verify", async (req, res) => {
 
 app.get("/health", (req, res) => res.status(200).json({ ok: true }));
 
-app.listen(PORT, () => console.log(`auth-service listening on :${PORT}`));
+app.listen(PORT, () => console.log(`Auth Service is listening on :${PORT}`));
