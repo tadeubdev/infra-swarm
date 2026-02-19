@@ -15,9 +15,10 @@ services:
         - traefik.enable=true
         - traefik.docker.network=public
 
-        - traefik.http.routers.auth.rule=Host(`auth.tadeubarbosa.work`)
-        - traefik.http.routers.auth.entrypoints=web
-        - traefik.http.services.auth.loadbalancer.server.port=3001
+        - traefik.http.routers.auth-svc.rule=Host(`auth.tadeubarbosa.work`)
+        - traefik.http.routers.auth-svc.entrypoints=web
+        - traefik.http.services.auth-svc.loadbalancer.server.port=3001
+
 networks:
   public:
     external: true
