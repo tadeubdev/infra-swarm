@@ -2,13 +2,13 @@ version: "3.8"
 
 services:
   auth:
-    build: .
+    image: ghcr.io/tadeubdev/infra-swarm-auth:latest
+    networks:
+      - public
     environment:
       - JWT_SECRET=${JWT_SECRET}
       # - REQUIRED_ISS=https://seu-issuer
       # - REQUIRED_AUD=sua-audience
-    networks:
-      - traefik_public
     deploy:
       replicas: 1
       labels:
@@ -20,5 +20,5 @@ services:
         - traefik.http.services.auth.loadbalancer.server.port=3001
 
 networks:
-  traefik_public:
+  public:
     external: true

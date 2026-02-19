@@ -61,6 +61,7 @@ jobs:
             echo "Deploying SHA: ${{ github.sha }}"
 
             docker service update --with-registry-auth \
+              --env-add JWT_SECRET=${{ secrets.AUTH_JWT_SECRET }} \
               --image ${{ env.IMAGE_AUTH }}:${{ github.sha }} \
               apps_auth
 
