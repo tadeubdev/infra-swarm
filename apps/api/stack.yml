@@ -31,8 +31,15 @@ services:
         - traefik.http.middlewares.api-ratelimit.ratelimit.average=10 # Limite médio de 10 requisições por segundo
         - traefik.http.middlewares.api-ratelimit.ratelimit.burst=20 # Permite um estouro de até 20 requisições em um curto período
 
-        # Encaixa o middleware no router
-        - traefik.http.routers.api.middlewares=api-ratelimit
+        # middleware forwardAuth
+        - traefik.http.middlewares.api-auth.forwardauth.address=http://auth:3001/verify
+        - traefik.http.middlewares.api-auth.forwardauth.trustForwardHeader=true
+
+        # quais headers do auth iremos repassar pra API (Traefik pode forward) --- IMPORTANTE ---
+        - traefik.http.middlewares.api-auth.forwardauth.authResponseHeaders=X-Auth-Sub,X-Auth-Email,X-Auth-Roles
+
+        # encaixa middlewares no router da API
+        - traefik.http.routers.api.middlewares=api-auth,api-ratelimit
 
 networks:
   public:
