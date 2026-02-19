@@ -78,6 +78,7 @@ jobs:
 
           MSG="${STATUS_EMOJI} ${STATUS_TEXT}
           Projeto: ${{ github.repository }}
+          Aplicação: API
           Branch: ${{ github.ref_name }}
           Autor: ${{ github.actor }}
           SHA: ${SHA_SHORT}
