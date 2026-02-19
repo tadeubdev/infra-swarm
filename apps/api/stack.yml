@@ -27,6 +27,13 @@ services:
 
         - traefik.http.services.api.loadbalancer.server.port=3000
 
+        # Middleware: rate limit
+        - traefik.http.middlewares.api-ratelimit.ratelimit.average=10 # Limite médio de 10 requisições por segundo
+        - traefik.http.middlewares.api-ratelimit.ratelimit.burst=20 # Permite um estouro de até 20 requisições em um curto período
+
+        # Encaixa o middleware no router
+        - traefik.http.routers.api.middlewares=api-ratelimit
+
 networks:
   public:
     external: true
