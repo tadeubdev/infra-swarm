@@ -4,7 +4,7 @@ import { jwtVerify } from "jose";
 const app = express();
 
 const PORT = process.env.PORT || 3001;
-const JWT_SECRET = process.env.JWT_SECRET || "";
+const JWT_SECRET = process.env.JWT_SECRET || "token_default_para_desenvolvimento";
 const AUTH_HEADER = process.env.AUTH_HEADER || "authorization";
 const REQUIRED_AUD = process.env.REQUIRED_AUD || "";
 const REQUIRED_ISS = process.env.REQUIRED_ISS || "";
